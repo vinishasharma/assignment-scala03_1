@@ -9,24 +9,19 @@ import org.json4s.jackson.Json
 
 object OperationCall extends App {
 
-  val logger = Logger.getLogger(this.getClass)
-  val houseNumber = 21
-  val address = new Address("wall street", houseNumber)
-  val age = 23
-  val salary = 50000
-  val favNumber = 4
-  val person = new Person("vinisha", age, "wednesday", address, salary, favNumber)
+  val log = Logger.getLogger(this.getClass)
+  val address = new Address("wall street", 21)
+  val person = new Person("vinisha", 23, "wednesday", address, 50000, 2)
+  log.info(s"Person object value: \n $person")
 
-  implicit val formats = DefaultFormats
-  val personJsonString = Json.apply(formats).write(person)
-  logger.info(s"Person object value: \n $person")
-  logger.info(s"Json String: \n$personJsonString")
-  val fileWriter: PrintWriter = new PrintWriter(new File("PersonInfo.txt"))
-  fileWriter.write(personJsonString)
-  fileWriter.close()
+  val operation = new Operation
+  val personJsonString = operation.toJsonString(person)
+  log.info(s"\nJson String: \n$personJsonString")
 
-  val personData = Source.fromFile("PersonInfo.txt").getLines.mkString
-  val personObject = Json.apply(formats).read[Person](personData)
-  logger.info(s"\nperson object read from file: \n $personObject")
+  operation.writeToFile(personJsonString)
+
+  val personData = operation.readFromFile("PersonInfo.Txt")
+  val personObject = operation.toPersonObject(personData)
+  log.info(s"\nperson object read from file: \n $personObject")
 
 }
